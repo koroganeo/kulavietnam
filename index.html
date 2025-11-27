@@ -1,0 +1,564 @@
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mạng lưới Hệ thống Lúa ĐBSCL - Gephi Style</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+            background: #1a1a1a;
+            overflow: hidden;
+        }
+        
+        #container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+        
+        #graph {
+            width: 100%;
+            height: 100%;
+        }
+        
+        .node {
+            cursor: pointer;
+            stroke-width: 2px;
+            transition: all 0.3s;
+        }
+        
+        .node:hover {
+            stroke-width: 4px;
+            filter: brightness(1.3);
+        }
+        
+        .node-label {
+            font-size: 10px;
+            font-weight: 600;
+            fill: #ffffff;
+            text-anchor: middle;
+            pointer-events: none;
+            text-shadow: 0 0 3px rgba(0,0,0,0.8);
+        }
+        
+        .link {
+            fill: none;
+            stroke-opacity: 0.4;
+            transition: all 0.3s;
+        }
+        
+        .link:hover {
+            stroke-opacity: 0.8;
+            stroke-width: 3;
+        }
+        
+        #info-panel {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(26, 26, 26, 0.95);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            width: 250px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+            border: 1px solid #333;
+        }
+        
+        #info-panel h2 {
+            margin-top: 0;
+            font-size: 18px;
+            color: #4db8ff;
+            border-bottom: 1px solid #333;
+            padding-bottom: 10px;
+        }
+        
+        #legend {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(26, 26, 26, 0.95);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid #333;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin: 5px 0;
+            font-size: 12px;
+        }
+        
+        .legend-circle {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        
+        #controls {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(26, 26, 26, 0.95);
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid #333;
+        }
+        
+        button {
+            background: #4db8ff;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            margin: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        button:hover {
+            background: #66c2ff;
+            transform: scale(1.05);
+        }
+        
+        .tooltip {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.95);
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            pointer-events: none;
+            display: none;
+            max-width: 300px;
+            border: 1px solid #4db8ff;
+            box-shadow: 0 2px 10px rgba(77, 184, 255, 0.3);
+        }
+        
+        .node-glow {
+            filter: url(#glow);
+        }
+        
+        #stats {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(26, 26, 26, 0.95);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid #333;
+            font-size: 12px;
+        }
+        
+        .stat-item {
+            margin: 5px 0;
+            color: #aaa;
+        }
+        
+        .stat-value {
+            color: #4db8ff;
+            font-weight: bold;
+        }
+    </style>
+</script></script>
+</head>
+<body>
+    <div id="container">
+        <svg id="graph"></svg>
+        
+        <div id="info-panel">
+            <h2>Mạng lưới Lúa ĐBSCL</h2>
+            <p style="font-size: 12px; color: #aaa;">Phân tích Actor-Network Theory</p>
+            <p style="font-size: 11px; color: #888;">Kích thước node: Mức độ trung tâm<br>
+            Màu sắc: Loại tác nhân<br>
+            Độ dày edge: Cường độ quan hệ</p>
+        </div>
+        
+        <div id="legend">
+            <div class="legend-item">
+                <div class="legend-circle" style="background: #4db8ff;"></div>
+                <span>Con người</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-circle" style="background: #66ff66;"></div>
+                <span>Sinh học</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-circle" style="background: #ff66ff;"></div>
+                <span>Kỹ thuật</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-circle" style="background: #66ffcc;"></div>
+                <span>Tự nhiên</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-circle" style="background: #ffaa66;"></div>
+                <span>Kinh tế</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-circle" style="background: #ff6666;"></div>
+                <span>Thể chế</span>
+            </div>
+        </div>
+        
+        <div id="controls">
+            <button onclick="toggleForce()">Tạm dừng/Tiếp tục</button>
+            <button onclick="resetZoom()">Reset Zoom</button>
+        </div>
+        
+        <div id="stats">
+            <div class="stat-item">Số node: <span class="stat-value">28</span></div>
+            <div class="stat-item">Số edge: <span class="stat-value">52</span></div>
+            <div class="stat-item">Mật độ: <span class="stat-value">0.14</span></div>
+            <div class="stat-item">Clustering: <span class="stat-value">0.67</span></div>
+        </div>
+    </div>
+    
+    <div class="tooltip" id="tooltip"></div>
+    
+    <script>
+        // Data structure
+        const nodes = [
+            // Human actors
+            {id: "farmer", label: "Nông dân", group: "human", centrality: 1.0, 
+             info: "30-40 năm trồng lúa, thu nhập ngưỡng nghèo, tâm điểm mạng lưới"},
+            {id: "trader", label: "Thương lái", group: "human", centrality: 0.6,
+             info: "Ép giá, chỉ trả 4-17% giá trị chuỗi"},
+            {id: "supplier", label: "Đại lý vật tư", group: "human", centrality: 0.6,
+             info: "Cho vay nợ, tư vấn không khoa học"},
+            
+            // Biological actors
+            {id: "rice", label: "Lúa 3 vụ", group: "biological", centrality: 0.9,
+             info: "Từ 'thần nông' thành gánh nặng phân thuốc"},
+            {id: "soil", label: "Đất bạc màu", group: "biological", centrality: 0.85,
+             info: "Mất 85% chất hữu cơ, pH giảm, cứng hóa"},
+            {id: "pest", label: "Sâu bệnh", group: "biological", centrality: 0.7,
+             info: "Kháng thuốc, cần liều cao gấp 100 lần"},
+            {id: "microbe", label: "Vi sinh vật", group: "biological", centrality: 0.5,
+             info: "Vi sinh có lợi giảm, chỉ còn nhóm 'cơ hội'"},
+            {id: "fish", label: "Tôm cá", group: "biological", centrality: 0.3,
+             info: "Mất 98%, không còn nguồn protein tự nhiên"},
+            
+            // Technical actors
+            {id: "fertilizer", label: "Phân hóa học", group: "technical", centrality: 0.8,
+             info: "400-600kg/ha/vụ, chiếm 50% chi phí"},
+            {id: "pesticide", label: "Thuốc trừ sâu", group: "technical", centrality: 0.75,
+             info: "64 loại, phun 8-10 lần/vụ, 99% gây ô nhiễm"},
+            {id: "levee", label: "Đê bao", group: "technical", centrality: 0.7,
+             info: "180km, ngăn lũ 30 năm, từ bảo vệ thành giam cầm"},
+            {id: "machine", label: "Máy móc", group: "technical", centrality: 0.5,
+             info: "Máy cày, gặt, bơm - tăng chi phí"},
+            
+            // Natural actors
+            {id: "flood", label: "Lũ Mekong", group: "natural", centrality: 0.8,
+             info: "Lũ 'đói' phù sa, mất 74% do thủy điện"},
+            {id: "sediment", label: "Phù sa", group: "natural", centrality: 0.6,
+             info: "15 triệu USD/năm, giảm 74%"},
+            {id: "salinity", label: "Hạn mặn", group: "natural", centrality: 0.65,
+             info: "2016: 245.000ha mất trắng"},
+            {id: "climate", label: "Thời tiết cực đoan", group: "natural", centrality: 0.5,
+             info: "Mưa trái mùa, nắng cực đoan tăng"},
+            
+            // Economic actors
+            {id: "price", label: "Giá lúa", group: "economic", centrality: 0.75,
+             info: "5.600-7.500đ/kg, biến động mạnh"},
+            {id: "debt", label: "Nợ ngân hàng", group: "economic", centrality: 0.7,
+             info: "2 tỷ/hộ, phải bán đất trả nợ"},
+            {id: "export", label: "Xuất khẩu", group: "economic", centrality: 0.6,
+             info: "Tỷ đô nhưng nông dân vẫn nghèo"},
+            {id: "cost", label: "Chi phí đầu vào", group: "economic", centrality: 0.65,
+             info: "Tăng liên tục, vượt khả năng nông dân"},
+            
+            // Institutional actors
+            {id: "policy", label: "Chính sách", group: "institutional", centrality: 0.7,
+             info: "An ninh lương thực, chưa tính bền vững"},
+            {id: "dam", label: "Thủy điện", group: "institutional", centrality: 0.6,
+             info: "Trung Quốc, Lào giữ 74% phù sa"},
+            {id: "coop", label: "HTX", group: "institutional", centrality: 0.4,
+             info: "Yếu, chỉ 6.6% diện tích"},
+            {id: "market", label: "Thị trường", group: "institutional", centrality: 0.55,
+             info: "Chuỗi giá trị bất công"},
+            
+            // Additional interconnected actors
+            {id: "water", label: "Nước ngầm", group: "natural", centrality: 0.45,
+             info: "Suy giảm, nhiễm mặn"},
+            {id: "village", label: "Cộng đồng", group: "human", centrality: 0.5,
+             info: "Không thống nhất xả lũ"},
+            {id: "knowledge", label: "Kiến thức", group: "technical", centrality: 0.4,
+             info: "90% nông dân chưa được đào tạo"},
+            {id: "tradition", label: "Tập quán", group: "institutional", centrality: 0.35,
+             info: "Từ thuận thiên sang chế ngự"}
+        ];
+        
+        const links = [
+            // Core relationships
+            {source: "farmer", target: "rice", weight: 5, type: "cultivation"},
+            {source: "farmer", target: "soil", weight: 4, type: "degradation"},
+            {source: "farmer", target: "supplier", weight: 4, type: "debt"},
+            {source: "farmer", target: "trader", weight: 4, type: "exploitation"},
+            {source: "farmer", target: "debt", weight: 5, type: "financial"},
+            
+            // Soil degradation network
+            {source: "fertilizer", target: "soil", weight: 5, type: "degradation"},
+            {source: "pesticide", target: "soil", weight: 4, type: "pollution"},
+            {source: "soil", target: "microbe", weight: 3, type: "destruction"},
+            {source: "rice", target: "soil", weight: 4, type: "exhaustion"},
+            
+            // Pest resistance network
+            {source: "pesticide", target: "pest", weight: 5, type: "resistance"},
+            {source: "pest", target: "rice", weight: 4, type: "damage"},
+            {source: "rice", target: "pest", weight: 3, type: "attraction"},
+            
+            // Water and flood system
+            {source: "levee", target: "flood", weight: 5, type: "blocking"},
+            {source: "flood", target: "sediment", weight: 4, type: "transport"},
+            {source: "sediment", target: "soil", weight: 5, type: "enrichment"},
+            {source: "dam", target: "sediment", weight: 5, type: "retention"},
+            {source: "salinity", target: "rice", weight: 4, type: "damage"},
+            {source: "salinity", target: "water", weight: 3, type: "contamination"},
+            
+            // Economic pressures
+            {source: "price", target: "farmer", weight: 5, type: "pressure"},
+            {source: "export", target: "price", weight: 3, type: "influence"},
+            {source: "cost", target: "farmer", weight: 5, type: "burden"},
+            {source: "fertilizer", target: "cost", weight: 4, type: "increase"},
+            {source: "pesticide", target: "cost", weight: 4, type: "increase"},
+            {source: "machine", target: "cost", weight: 3, type: "increase"},
+            
+            // Policy network
+            {source: "policy", target: "farmer", weight: 4, type: "directive"},
+            {source: "policy", target: "levee", weight: 3, type: "construction"},
+            {source: "policy", target: "export", weight: 3, type: "promotion"},
+            
+            // Supply chain
+            {source: "supplier", target: "fertilizer", weight: 4, type: "supply"},
+            {source: "supplier", target: "pesticide", weight: 4, type: "supply"},
+            {source: "trader", target: "market", weight: 3, type: "connection"},
+            
+            // Climate impacts
+            {source: "climate", target: "rice", weight: 3, type: "damage"},
+            {source: "climate", target: "flood", weight: 3, type: "intensification"},
+            {source: "climate", target: "salinity", weight: 3, type: "increase"},
+            
+            // Lost ecosystem
+            {source: "fish", target: "flood", weight: 2, type: "dependency"},
+            {source: "levee", target: "fish", weight: 4, type: "elimination"},
+            
+            // Community dynamics
+            {source: "village", target: "farmer", weight: 3, type: "social"},
+            {source: "village", target: "levee", weight: 3, type: "disagreement"},
+            {source: "tradition", target: "farmer", weight: 2, type: "influence"},
+            
+            // Knowledge gaps
+            {source: "knowledge", target: "farmer", weight: 3, type: "limitation"},
+            {source: "coop", target: "knowledge", weight: 2, type: "transfer"},
+            {source: "coop", target: "farmer", weight: 2, type: "organization"},
+            
+            // Additional interdependencies
+            {source: "debt", target: "machine", weight: 2, type: "investment"},
+            {source: "water", target: "rice", weight: 3, type: "irrigation"},
+            {source: "microbe", target: "fertilizer", weight: 2, type: "replacement"}
+        ];
+        
+        // Color scheme
+        const colors = {
+            human: "#4db8ff",
+            biological: "#66ff66",
+            technical: "#ff66ff",
+            natural: "#66ffcc",
+            economic: "#ffaa66",
+            institutional: "#ff6666"
+        };
+        
+        // Initialize SVG
+        const width = window.innerWidth;
+        const height = window.innerHeight;
+        
+        const svg = d3.select("#graph")
+            .attr("width", width)
+            .attr("height", height);
+        
+        // Add glow filter
+        const defs = svg.append("defs");
+        const filter = defs.append("filter")
+            .attr("id", "glow");
+        filter.append("feGaussianBlur")
+            .attr("stdDeviation", "3")
+            .attr("result", "coloredBlur");
+        const feMerge = filter.append("feMerge");
+        feMerge.append("feMergeNode")
+            .attr("in", "coloredBlur");
+        feMerge.append("feMergeNode")
+            .attr("in", "SourceGraphic");
+        
+        // Create zoom behavior
+        const zoom = d3.zoom()
+            .scaleExtent([0.1, 10])
+            .on("zoom", zoomed);
+        
+        svg.call(zoom);
+        
+        const g = svg.append("g");
+        
+        function zoomed(event) {
+            g.attr("transform", event.transform);
+        }
+        
+        // Create force simulation
+        const simulation = d3.forceSimulation(nodes)
+            .force("link", d3.forceLink(links)
+                .id(d => d.id)
+                .distance(d => 150 / Math.sqrt(d.weight))
+                .strength(d => d.weight * 0.1))
+            .force("charge", d3.forceManyBody()
+                .strength(d => -300 * d.centrality))
+            .force("center", d3.forceCenter(width / 2, height / 2))
+            .force("collision", d3.forceCollide()
+                .radius(d => Math.sqrt(d.centrality) * 30));
+        
+        // Create links
+        const link = g.append("g")
+            .selectAll("line")
+            .data(links)
+            .enter().append("line")
+            .attr("class", "link")
+            .attr("stroke", d => {
+                if (d.type === "degradation" || d.type === "exploitation" || d.type === "pollution") 
+                    return "#ff4444";
+                else if (d.type === "enrichment" || d.type === "beneficial") 
+                    return "#44ff44";
+                else 
+                    return "#888888";
+            })
+            .attr("stroke-width", d => Math.sqrt(d.weight));
+        
+        // Create nodes
+        const node = g.append("g")
+            .selectAll("g")
+            .data(nodes)
+            .enter().append("g")
+            .call(d3.drag()
+                .on("start", dragstarted)
+                .on("drag", dragged)
+                .on("end", dragended));
+        
+        // Add circles for nodes
+        node.append("circle")
+            .attr("class", "node")
+            .attr("r", d => Math.sqrt(d.centrality) * 25)
+            .attr("fill", d => colors[d.group])
+            .attr("stroke", "#000")
+            .on("mouseover", showTooltip)
+            .on("mouseout", hideTooltip);
+        
+        // Add labels
+        node.append("text")
+            .attr("class", "node-label")
+            .attr("dy", ".35em")
+            .text(d => d.label)
+            .style("font-size", d => Math.sqrt(d.centrality) * 12 + "px");
+        
+        // Tooltip functions
+        const tooltip = d3.select("#tooltip");
+        
+        function showTooltip(event, d) {
+            tooltip
+                .style("display", "block")
+                .style("left", (event.pageX + 10) + "px")
+                .style("top", (event.pageY - 10) + "px")
+                .html(`<strong>${d.label}</strong><br>
+                       Nhóm: ${d.group}<br>
+                       Centrality: ${d.centrality.toFixed(2)}<br>
+                       ${d.info}`);
+        }
+        
+        function hideTooltip() {
+            tooltip.style("display", "none");
+        }
+        
+        // Simulation tick
+        simulation.on("tick", () => {
+            link
+                .attr("x1", d => d.source.x)
+                .attr("y1", d => d.source.y)
+                .attr("x2", d => d.target.x)
+                .attr("y2", d => d.target.y);
+            
+            node
+                .attr("transform", d => `translate(${d.x},${d.y})`);
+        });
+        
+        // Drag functions
+        function dragstarted(event, d) {
+            if (!event.active) simulation.alphaTarget(0.3).restart();
+            d.fx = d.x;
+            d.fy = d.y;
+        }
+        
+        function dragged(event, d) {
+            d.fx = event.x;
+            d.fy = event.y;
+        }
+        
+        function dragended(event, d) {
+            if (!event.active) simulation.alphaTarget(0);
+            d.fx = null;
+            d.fy = null;
+        }
+        
+        // Control functions
+        let isPaused = false;
+        function toggleForce() {
+            if (isPaused) {
+                simulation.restart();
+            } else {
+                simulation.stop();
+            }
+            isPaused = !isPaused;
+        }
+        
+        function resetZoom() {
+            svg.transition()
+                .duration(750)
+                .call(zoom.transform, d3.zoomIdentity);
+        }
+        
+        // Highlight connections on hover
+        node.on("click", function(event, d) {
+            // Reset all
+            node.style("opacity", 0.2);
+            link.style("opacity", 0.1);
+            
+            // Highlight selected and connected
+            d3.select(this).style("opacity", 1);
+            
+            link.each(function(l) {
+                if (l.source.id === d.id || l.target.id === d.id) {
+                    d3.select(this).style("opacity", 0.8);
+                    
+                    node.each(function(n) {
+                        if (n.id === l.source.id || n.id === l.target.id) {
+                            d3.select(this).style("opacity", 1);
+                        }
+                    });
+                }
+            });
+        });
+        
+        // Double click to reset
+        svg.on("dblclick", function() {
+            node.style("opacity", 1);
+            link.style("opacity", 0.4);
+        });
+    </script>
+</body>
+</html>
